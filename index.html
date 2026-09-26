@@ -106,7 +106,8 @@ function Parrot({size=56, color='var(--beige)'}) {
 function Envelope({onOpen}) {
   const [opening, setOpening] = useState(false);
   const handle = () => {
-    if (typeof window.__playBgMusic === 'function') window.__playBgMusic();
+    // Only the visible Vimeo video's own audio plays now — the hidden
+    // YouTube background-music player was causing duplicated sound.
     if (typeof window.__playVideo === 'function') window.__playVideo();
     setOpening(true);
     setTimeout(onOpen, 1000);
