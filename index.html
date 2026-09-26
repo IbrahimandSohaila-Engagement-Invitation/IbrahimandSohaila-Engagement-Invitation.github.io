@@ -231,6 +231,14 @@ function App() {
       if (cancelled) return;
       if (window.Vimeo && videoRef.current) {
         window.__vimeoPlayer = new Vimeo.Player(videoRef.current);
+        // Belt-and-suspenders loop: some embeds ignore the ?loop=1 URL
+        // param, so also manually rewind and replay on 'ended' to avoid
+        // Vimeo ever showing its end-of-video recommendations screen.
+        window.__vimeoPlayer.on('ended', function () {
+          window.__vimeoPlayer.setCurrentTime(0).then(function () {
+            window.__vimeoPlayer.play().catch(function () {});
+          }).catch(function () {});
+        });
       } else {
         setTimeout(tryInit, 150);
       }
@@ -251,7 +259,7 @@ function App() {
           <img src={BG_IMG} alt="" className="absolute inset-0 w-full h-full object-cover" style={{zIndex:0, borderRadius:'2px'}} />
           <iframe
             ref={videoRef}
-            src="https://player.vimeo.com/video/1230464042?title=0&byline=0&portrait=0&controls=0&autoplay=0&muted=1&dnt=1"
+            src="https://player.vimeo.com/video/1230464042?title=0&byline=0&portrait=0&controls=0&autoplay=0&muted=1&dnt=1&loop=1"
             className="absolute inset-0 w-full h-full"
             style={{border:0, zIndex:10, pointerEvents:'none', borderRadius:'2px'}}
             allow="autoplay; fullscreen"
